@@ -8,9 +8,21 @@ var mongo = require('mongodb').MongoClient;
 var url = process.env.MONGOHQ_URL || config.MONGOHQ_URL;
 
 function Msg(){}
+
+Msg.prototype.check = function()
+{
+
+  // Return if it's not an email adress
+  if (-1 == this.message.search(/\w[ ,]{0,2}\w[ ,]{0,2}\w[ ,]{0,2}/)) {
+    res.json(422, {'message':'Bad haiku'});
+  }
+
+};
+
 function StorageRepository(){}
 
-StorageRepository.prototype.persist = function(entity, callback){
+StorageRepository.prototype.persist = function(entity, callback)
+{
 
   if(!url){
     return callback({'error':true});
@@ -30,7 +42,8 @@ StorageRepository.prototype.persist = function(entity, callback){
 
 
 
-StorageRepository.prototype.find = function(id, callback){
+StorageRepository.prototype.find = function(id, callback)
+{
   mongo.connect(url, function (err, db) {
     db.collection('msg', function(er, collection) {
       collection.find({to:id}, function(er, item) {
@@ -58,8 +71,13 @@ exports.send = function(req, res){
   msg.date = new Date();
   msg.from = 'bebop';
   msg.to = 'rocksteady';
-  msg.message = 'Dikt i miniformat, enligt japanskt mönster';
+  msg.message = req.params.haiku;
   msg.visibility = 'public';
+
+
+  if (!msg.check()) {
+    res.json(422, {'message': 'That is not an haiku'});
+  }
 
   var storage = new StorageRepository();
 

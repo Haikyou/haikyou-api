@@ -30,7 +30,7 @@ Handling errors
 
 If Haikyou is having trouble, you might see a 5xx error. `500` means that Haikyou is down, `503 Service Unavailable`, or `504 Gateway Timeout`.
 
-400 means the request is terrible in general, 422 means you've sent a specific terrible request
+400 means the request is terrible in general, 422 means you've sent a specific terrible request - probably because it was not an haiku
 
 
 

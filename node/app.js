@@ -27,7 +27,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/send', routes.send);
+app.get('/send/haiku/:haiku', routes.send);
 app.get('/getall/id/:id', routes.getAll);
 
 http.createServer(app).listen(app.get('port'), function(){
