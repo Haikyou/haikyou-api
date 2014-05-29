@@ -8,9 +8,9 @@ var mongo = require('mongodb').MongoClient;
 var url = process.env.MONGOHQ_URL || config.MONGOHQ_URL;
 
 function Msg(){}
-function MsgRepository(){}
+function StorageRepository(){}
 
-MsgRepository.prototype.persist = function(entity, callback){
+StorageRepository.prototype.persist = function(entity, callback){
 
   if(!url){
     return callback({'error':true});
@@ -19,13 +19,25 @@ MsgRepository.prototype.persist = function(entity, callback){
   mongo.connect(url, function (err, db) {
 
     if (!err) {
-      db.collection('email').save({'_id': entity.email, 'date': entity.date}, function(er,rs) {
+      db.collection('msg').save({'from': entity.from, 'to': entity.to, 'message': entity.message, 'date': entity.date}, function(er,rs) {
           return callback(er);
       });
     } else{
         return callback(err);
     }
   });  
+}
+
+
+
+StorageRepository.prototype.find = function(id, callback){
+  mongo.connect(url, function (err, db) {
+    db.collection('msg', function(er, collection) {
+      collection.find({to:id}, function(er, item) {
+        callback(item);
+      });
+    });
+  });
 }
 
 
@@ -42,17 +54,16 @@ exports.index = function(req, res){
 
 exports.send = function(req, res){
   var msg = new Msg();
+
   msg.date = new Date();
-  msg.email = req.params.email;
+  msg.from = 'bebop';
+  msg.to = 'rocksteady';
+  msg.message = 'Dikt i miniformat, enligt japanskt mönster';
+  msg.visibility = 'public';
 
-  // Return if it's not an email adress
-  if (-1 == entity.email.search(/.+@.+/)) {
-    res.json(422, {'message':'Bad email address'});
-  }
+  var storage = new StorageRepository();
 
-  var repo = new StorageRepository();
-
-  repo.persist(entity, function(err){
+  storage.persist(msg, function(err){
     if (!err) {
       res.json({'message':'success'});    
     } else{
@@ -65,4 +76,9 @@ exports.send = function(req, res){
 
 
 exports.getAll = function(req, res){
+  var storage = new StorageRepository();
+
+  storage.find('rocksteady', function(entity){
+    res.json(entity);
+  });  
 };
