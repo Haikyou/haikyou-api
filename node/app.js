@@ -28,7 +28,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/send', routes.send);
-app.get('/getall', routes.getAll);
+app.get('/getall/id/:id', routes.getAll);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Haikyou listening on port ' + app.get('port'));
