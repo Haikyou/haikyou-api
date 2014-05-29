@@ -13,9 +13,11 @@ Msg.prototype.check = function()
 {
 
   // Return if it's not an email adress
-  if (-1 == this.message.search(/\w[ ,]{0,2}\w[ ,]{0,2}\w[ ,]{0,2}/)) {
-    res.json(422, {'message':'Bad haiku'});
+  if (-1 == this.message.search(/hejsan/)) {
+    return false;
   }
+
+  return true;
 
 };
 
@@ -75,9 +77,7 @@ exports.send = function(req, res){
   msg.visibility = 'public';
 
 
-  if (!msg.check()) {
-    res.json(422, {'message': 'That is not an haiku'});
-  }
+  // res.json(422, {'message': 'That is not an haiku'});
 
   var storage = new StorageRepository();
 
