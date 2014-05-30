@@ -48,8 +48,14 @@ StorageRepository.prototype.find = function(id, callback)
 {
   mongo.connect(url, function (err, db) {
     db.collection('msg', function(er, collection) {
-      collection.find({to:id}, function(er, item) {
-        callback(item);
+      collection.find({
+        "to":id
+      }, {
+        "_id":false
+      }).toArray(function(err, res){
+        if(!err){
+          callback(res);
+        }
       });
     });
   });
