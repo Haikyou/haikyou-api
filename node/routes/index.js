@@ -9,10 +9,10 @@ var url = process.env.MONGOHQ_URL || config.MONGOHQ_URL;
 
 function Msg(){}
 
-Msg.prototype.check = function()
+Msg.prototype.isHaiku = function()
 {
 
-  // Return if it's not an email adress
+  // Return if not an haiku
   if (-1 == this.message.search(/hejsan/)) {
     return false;
   }
