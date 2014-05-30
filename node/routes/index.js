@@ -99,7 +99,7 @@ exports.send = function(req, res){
 
 
 
-exports.getAll = function(req, res){
+exports.conversation = function(req, res){
   var storage = new StorageRepository();
 
   storage.find('rocksteady', function(entity){
