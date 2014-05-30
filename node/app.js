@@ -36,7 +36,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/send/haiku/:haiku', routes.send);
-app.get('/getall/id/:id', routes.getAll);
+app.get('/conversation', routes.conversation);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Haikyou listening on port ' + app.get('port'));
