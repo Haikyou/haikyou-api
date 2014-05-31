@@ -52,7 +52,7 @@ StorageRepository.prototype.find = function(id, callback)
         "to":id
       }, {
         "_id":false
-      }).toArray(function(err, res){
+      }).limit(4).sort({'date':-1}).toArray(function(err, res){
         if(!err){
           callback(res);
         }
@@ -74,12 +74,13 @@ exports.index = function(req, res){
 
 
 exports.send = function(req, res){
+
   var msg = new Msg();
 
   msg.date = new Date();
-  msg.from = 'bebop';
-  msg.to = 'rocksteady';
-  msg.message = req.params.haiku;
+  msg.from = req.body.from;
+  msg.to = req.body.to;
+  msg.message = req.body.message;
   msg.visibility = 'public';
 
 
@@ -98,20 +99,10 @@ exports.send = function(req, res){
 
 
 
-
 exports.conversation = function(req, res){
   var storage = new StorageRepository();
 
-  storage.find('rocksteady', function(entity){
+  storage.find('Rocksteady', function(entity){
     res.json(entity);
   });  
-};
-
-
-exports.staticsend = function(req, res){
-    res.json({'message':'success'});    
-};
-
-exports.staticconversation = function(req, res){
-    res.json([{'from':'bebop', 'to':'rocksteady', 'message':'haiku'}]);
 };
