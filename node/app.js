@@ -13,7 +13,7 @@ var app = express();
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  // res.header("Access-Control-Allow-Methods", "GET,POST,PUT");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 }
@@ -36,8 +36,8 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/conversation', routes.staticconversation);
-app.put('/conversation/:haiku', routes.staticsend);
+app.get('/conversation', routes.conversation);
+app.put('/conversation/:haiku', routes.send);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Haikyou listening on port ' + app.get('port'));
