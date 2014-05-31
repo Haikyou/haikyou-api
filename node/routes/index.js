@@ -106,3 +106,12 @@ exports.conversation = function(req, res){
     res.json(entity);
   });  
 };
+
+
+exports.staticsend = function(req, res){
+    res.json({'message':'success'});    
+};
+
+exports.staticconversation = function(req, res){
+    res.json([{'from':'bebop', 'to':'rocksteady', 'message':'haiku'}]);
+};
