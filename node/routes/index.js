@@ -33,7 +33,7 @@ StorageRepository.prototype.persist = function(entity, callback)
   mongo.connect(url, function (err, db) {
 
     if (!err) {
-      db.collection('msg').save({'from': entity.from, 'to': entity.to, 'message': entity.message, 'date': entity.date}, function(er,rs) {
+      db.collection('msg').save({'from': entity.from, 'to': entity.to, 'message': entity.message, 'date': entity.date, 'visibility': entity.visibility}, function(er,rs) {
           return callback(er);
       });
     } else{
@@ -96,6 +96,10 @@ exports.send = function(req, res){
     }
   });
 };
+
+
+
+
 
 
 
