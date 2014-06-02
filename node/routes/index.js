@@ -3,6 +3,7 @@ try {
 } catch (e) {}
 
 var mongo = require('mongodb').MongoClient;
+var ObjectID = require('mongodb').ObjectID;
 
 // Get URL from Environment or Local config
 var url = process.env.MONGOHQ_URL || config.MONGOHQ_URL;
@@ -33,7 +34,21 @@ StorageRepository.prototype.persist = function(entity, callback)
   mongo.connect(url, function (err, db) {
 
     if (!err) {
-      db.collection('msg').save({'from': entity.from, 'to': entity.to, 'message': entity.message, 'date': entity.date, 'visibility': entity.visibility}, function(er,rs) {
+
+      var obj = {
+        'from': entity.from, 
+        'to': entity.to, 
+        'message': entity.message, 
+        'date': entity.date, 
+        'visibility': entity.visibility,
+        'starred': entity.starred
+      };
+
+      if(entity['_id']){
+        obj['_id'] = new ObjectID(entity._id);
+      }
+
+      db.collection('msg').save(obj, function(er,rs) {
           return callback(er);
       });
     } else{
@@ -50,8 +65,6 @@ StorageRepository.prototype.find = function(id, callback)
     db.collection('msg', function(er, collection) {
       collection.find({
         "to":id
-      }, {
-        "_id":false
       }).limit(4).sort({'date':-1}).toArray(function(err, res){
         if(!err){
           callback(res);
@@ -73,9 +86,12 @@ exports.index = function(req, res){
 
 
 
-exports.send = function(req, res){
-
+exports.conversationPost = function(req, res){
   var msg = new Msg();
+
+  if (req.params['id']) {
+    msg._id = req.params['id'];
+  }
 
   msg.date = new Date();
   msg.from = req.body.from;
@@ -83,6 +99,11 @@ exports.send = function(req, res){
   msg.message = req.body.message;
   msg.visibility = 'public';
 
+  if (req.body['starred']) {
+    msg.starred = req.body.starred;
+  } else{
+    msg.starred = false;    
+  }
 
   // res.json(422, {'message': 'That is not an haiku'});
 
@@ -100,10 +121,7 @@ exports.send = function(req, res){
 
 
 
-
-
-
-exports.conversation = function(req, res){
+exports.conversationGet = function(req, res){
   var storage = new StorageRepository();
 
   storage.find('Rocksteady', function(entity){
