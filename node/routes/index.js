@@ -8,7 +8,9 @@ var ObjectID = require('mongodb').ObjectID;
 // Get URL from Environment or Local config
 var url = process.env.MONGOHQ_URL || config.MONGOHQ_URL;
 
-function Msg(){}
+function Msg(){
+  this.date = new Date();
+}
 
 Msg.prototype.isHaiku = function()
 {
@@ -22,9 +24,9 @@ Msg.prototype.isHaiku = function()
 
 };
 
-function StorageRepository(){}
+function MessageRepository(){}
 
-StorageRepository.prototype.persist = function(entity, callback)
+MessageRepository.prototype.persist = function(entity, callback)
 {
 
   if(!url){
@@ -59,13 +61,25 @@ StorageRepository.prototype.persist = function(entity, callback)
 
 
 
-StorageRepository.prototype.find = function(id, callback)
+MessageRepository.prototype.findOne = function(id, callback)
+{
+  var objectID = new ObjectID(id);
+
+  mongo.connect(url, function (err, db) {
+    db.collection('msg', function(er, collection) {
+      collection.findOne({'_id': objectID}, function(err, res){
+        callback(err, res);
+      });
+    });
+  });
+}
+
+
+MessageRepository.prototype.find = function(search, callback)
 {
   mongo.connect(url, function (err, db) {
     db.collection('msg', function(er, collection) {
-      collection.find({
-        "to":id
-      }).limit(4).sort({'date':-1}).toArray(function(err, res){
+      collection.find(search).limit(4).sort({'date':-1}).toArray(function(err, res){
         if(!err){
           callback(res);
         }
@@ -75,41 +89,74 @@ StorageRepository.prototype.find = function(id, callback)
 }
 
 
+MessageRepository.prototype.remove = function(id, callback)
+{
+  var objectID = new ObjectID(id);
+
+  mongo.connect(url, function (err, db) {
+    db.collection('msg', function(er, collection) {
+      collection.remove({_id:objectID}, function(err, res){
+        callback(err, res);
+      });
+    });
+  });
+}
+
+
+MessageRepository.prototype.findToMe = function(callback)
+{
+  return this.find({
+    "to":"Rocksteady"
+  }, callback);
+}
+
+MessageRepository.prototype.findFromMe = function(callback)
+{
+  return this.find({
+    "from":"Rocksteady"
+  }, callback);
+}
+
+MessageRepository.prototype.findStarred = function(callback)
+{
+  return this.find({
+    "starred":"true"
+  }, callback);
+}
+
 
 
 // API
 
-exports.index = function(req, res){
-  res.send('You are probably looking for <a href="http://haikyou.github.io">haikyou.github.io</a>');
+exports.index = function(req, res)
+{
+  res.send('You are probably looking for <a href="http://haikyou.jord.io">haikyou.jord.io</a>');
 };
 
 
 
 
-exports.conversationPost = function(req, res){
+exports.post = function(req, res)
+{
+
   var msg = new Msg();
 
   if (req.params['id']) {
+    // An update
     msg._id = req.params['id'];
   }
 
-  msg.date = new Date();
   msg.from = req.body.from;
   msg.to = req.body.to;
   msg.message = req.body.message;
-  msg.visibility = 'public';
+  msg.visibility = req.body.visibility || 'private';
+  msg.starred = req.body.starred || false;
 
-  if (req.body['starred']) {
-    msg.starred = req.body.starred;
-  } else{
-    msg.starred = false;    
-  }
+  console.log(msg);
 
-  // res.json(422, {'message': 'That is not an haiku'});
+  var messageRepo = new MessageRepository();
 
-  var storage = new StorageRepository();
-
-  storage.persist(msg, function(err){
+  messageRepo.persist(msg, function(err){
     if (!err) {
       res.json({'message':'success'});    
     } else{
@@ -121,10 +168,61 @@ exports.conversationPost = function(req, res){
 
 
 
-exports.conversationGet = function(req, res){
-  var storage = new StorageRepository();
 
-  storage.find('Rocksteady', function(entity){
-    res.json(entity);
+exports.getOne = function(req, res)
+{
+  var messageRepo = new MessageRepository();
+
+  messageRepo.findOne(req.params.id, function(err, entity){
+    if (!err) {
+      res.json(entity);
+    } else {
+      res.send(422);
+    }
   });  
+};
+
+
+
+exports.get = function(req, res)
+{
+
+  var messageRepo = new MessageRepository();
+
+  if (0 === Object.keys(req.query).length) {
+      messageRepo.findToMe(function(entity){
+        res.json(entity);
+      });  
+  }
+
+  else if ("true" == req.query['starred']) {
+    messageRepo.findStarred(function(entity){
+      res.json(entity);
+    });  
+  }
+
+  else{
+    res.send(422);
+  }
+};
+
+
+
+
+/*
+ * Delete a message
+ *
+ */
+exports.delete = function(req, res)
+{
+  var messageRepo = new MessageRepository();
+
+  messageRepo.remove(req.params.id, function(err, entity){
+    if (!err) {
+      res.json(entity);
+    } else {
+      res.send(422);
+    }    
+  });
+
 };

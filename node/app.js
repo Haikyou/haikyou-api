@@ -36,9 +36,11 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/conversation', routes.conversationGet);
-app.post('/conversation', routes.conversationPost);
-app.put('/conversation/:id', routes.conversationPost);
+app.get('/conversation', routes.get);
+app.get('/conversation/:id', routes.getOne);
+app.post('/conversation', routes.post);
+app.delete('/conversation/:id', routes.delete);
+app.put('/conversation/:id', routes.post);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Haikyou listening on port ' + app.get('port'));
