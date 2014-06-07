@@ -35,12 +35,19 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// Index
 app.get('/', routes.index);
-app.get('/conversation', routes.get);
-app.get('/conversation/:id', routes.getOne);
-app.post('/conversation', routes.post);
-app.delete('/conversation/:id', routes.delete);
-app.put('/conversation/:id', routes.post);
+
+// Users
+app.get('/users', routes.users);
+app.put('/users/:username/:email', routes.userCreate);
+
+// Messages
+app.get('/conversation', routes.messages);
+app.get('/conversation/:id', routes.message);
+app.post('/conversation', routes.messageCreate);
+app.put('/conversation/:id', routes.messageUpdate);
+app.delete('/conversation/:id', routes.messageDelete);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Haikyou listening on port ' + app.get('port'));
