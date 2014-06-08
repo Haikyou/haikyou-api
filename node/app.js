@@ -39,8 +39,11 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 
 // Users
+app.get('/user', routes.me);
+app.get('/users/:id', routes.user);
 app.get('/users', routes.users);
-app.put('/users/:username/:email', routes.userCreate);
+app.post('/users', routes.userCreate);
+app.put('/users/:username', routes.userUpdate);
 
 // Messages
 app.get('/conversation', routes.messages);
