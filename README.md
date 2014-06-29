@@ -41,18 +41,21 @@ Get all my posts
 	  "from": "Bebop",
 	  "to": "Rocksteady",
 	  "visibility": "public"
-	  "message": "Sup dog? This is not an haiku poem",
+	  "message": "This is not an haiku poem",
 	  "date": "2014-01-22T10:56:50+01:00",
 	},
 	{
 	  "from": "Rocksteady",
 	  "to": "Bebop",
 	  "visibility": "private"
-	  "message": "Sup dog? This is yet not an haiku poem",
+	  "message": "This is yet not an haiku poem",
 	  "date": "2014-01-22T10:56:51+01:00",
 	},	
 ]
 ```
+
+
+
 
 Send a message
 -----------
@@ -64,7 +67,37 @@ Send a message
   "from": "Bebop",
   "to": "Rocksteady",
   "visibility": "public"
-  "message": "Sup dog? This is not an haiku poem",
+  "message": "This is not an haiku poem",
+}
+```
+
+
+
+
+
+Star a message
+-----------
+
+* `POST /conversation/id` will star a message
+
+```json
+{
+  "id": "1"
+  "starred": true
+}
+```
+
+
+
+
+Change visibility of a message
+-----------
+
+* `POST /conversation/id` will change visibility of a message
+
+```json
+{
+  "visibility": "public"
 }
 ```
 
