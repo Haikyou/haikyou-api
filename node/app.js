@@ -46,9 +46,11 @@ app.post('/users', routes.userCreate);
 app.put('/users/:username', routes.userUpdate);
 
 // Messages
+app.post('/message', routes.messageCreate);
+
+// Conversation
 app.get('/conversation', routes.messages);
 app.get('/conversation/:id', routes.message);
-app.post('/conversation', routes.messageCreate);
 app.put('/conversation/:id', routes.messageUpdate);
 app.delete('/conversation/:id', routes.messageDelete);
 
