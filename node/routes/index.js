@@ -47,7 +47,8 @@ var Message = new Schema({
 	to: {type: String},
 	visibility: {type: Boolean, default: false},
 	starred: {type: Boolean, default: false},
-	date: {type: Date, default: Date.now}
+	date: {type: Date, default: Date.now},
+	type: {type: String, required: true}
 });
 
 // Map username -> id
@@ -217,7 +218,8 @@ exports.messageCreate = function(req, res)
 		message: input.message,
 		from: input.from,
 		to: input.to,
-		visibility: input.visibility
+		visibility: input.visibility,
+		type: input.type
 	});
 
 	message.save(function (err) {
